@@ -1,0 +1,8 @@
+Static{
+    background: red;
+    height: 100%;
+  }
+
+Grid {
+    grid-size:2 ;
+  }
