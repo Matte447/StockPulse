@@ -1,7 +1,8 @@
 from api.stock_api import get_current_stock_price, get_stock_history
-from models.portfolio import get_portfolio, update_portfolio
+from models.portfolio import get_portfolio, update_portfolio, initialize_portfolio
 
 
+initialize_portfolio()
 print(get_portfolio())
 into_portfolio = {"test": 2}
 update_portfolio(into_portfolio, "portfolio")

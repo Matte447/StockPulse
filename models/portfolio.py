@@ -1,6 +1,18 @@
 import json
 
 
+def initialize_portfolio():
+    try:
+        with open("./models/portfolio.json", "r") as f:
+            f.read()
+    except FileNotFoundError:
+        print("no file created")
+        open("./models/portfolio.json", "x")
+        normal_json_file = {"portfolio": []}
+        with open("./models/portfolio.json", "w") as f:
+            f.write(json.dumps(normal_json_file))
+
+
 def get_portfolio():
     with open("./models/portfolio.json", "r") as f:
         current_portfolio = json.load(f)
