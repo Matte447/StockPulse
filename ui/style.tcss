@@ -1,8 +1,17 @@
 Static{
-    background: red;
     height: 100%;
+    border: solid white;
+    padding: 0 1;
+    background: #272727;
   }
 
 Grid {
     grid-size:2 ;
+  }
+DataTable {
+    background: #1e1e1e;
+    row-span: 2;
+    height: 100%;
+    padding: 0 1;
+    border: solid white;
   }

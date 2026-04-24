@@ -1,5 +1,9 @@
 from api.stock_api import get_current_stock_price, get_stock_history
 from models.portfolio import get_portfolio, update_portfolio, initialize_portfolio
+from ui.app import mainLayout
+from textual.app import App
+
+mainLayout().run()
 
 
 # run portfolio check
@@ -22,7 +26,9 @@ if what_data.lower() == "y" or what_data.lower() == "yes":
     stock_end = input("When should the data end? (yyyy-mm-dd) ")
 
     # getting stock history
-    print(get_stock_history(company_stock_suffix, stock_interval, stock_start, stock_end))
+    print(
+        get_stock_history(company_stock_suffix, stock_interval, stock_start, stock_end)
+    )
 
 # getting current stock price
 print(f"Current price: {get_current_stock_price(company_stock_suffix)}")
