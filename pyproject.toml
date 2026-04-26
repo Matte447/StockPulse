@@ -1,0 +1,18 @@
+[project]
+name = "StockPulse"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "Matteo Bienert", email = "matteo.bienert@icloud.com"},
+]
+dependencies = [
+  "textual",
+  "yfinance"
+]
+requires-python = "==3.14.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false
