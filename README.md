@@ -6,4 +6,4 @@ A stock tracker for your terminal
 
 First type `source .venv/bin/activate` <br>
 Then start everything by typing `python main.py` <br>
-If you only want to look at the TUI, type `textual run --dev ui/app.py` <br>
+If you want to debug the ui, type `textual run --dev main.py` <br>

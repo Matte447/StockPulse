@@ -1,7 +1,6 @@
 from api.stock_api import get_current_stock_price, get_stock_history
 from models.portfolio import get_portfolio, update_portfolio, initialize_portfolio
 from ui.app import mainLayout
-from textual.app import App
 
 mainLayout().run()
 
