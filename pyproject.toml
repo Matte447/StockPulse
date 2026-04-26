@@ -3,7 +3,7 @@ name = "StockPulse"
 version = "0.1.0"
 description = "Default template for PDM package"
 authors = [
-    {name = "Matteo Bienert""},
+    {name = "Matteo Bienert"},
 ]
 dependencies = [
   "textual",
