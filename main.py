@@ -10,9 +10,6 @@ initialize_portfolio()
 
 # testing portfolio
 print(get_portfolio())
-into_portfolio = {"test": 2}
-update_portfolio(into_portfolio, "portfolio")
-print(get_portfolio())
 
 # getting user info about which stock, interval and start/end date
 company_stock_suffix = input("What stock do you want to look at? ")
