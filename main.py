@@ -1,15 +1,14 @@
 from api.stock_api import get_current_stock_price, get_stock_history
 from models.portfolio import get_portfolio, update_portfolio, initialize_portfolio
-from ui.app import mainLayout
-
-mainLayout().run()
+from ui.app import StockApp
 
 
 # run portfolio check
 initialize_portfolio()
 
-# testing portfolio
-print(get_portfolio())
+
+StockApp().run()
+
 
 # getting user info about which stock, interval and start/end date
 company_stock_suffix = input("What stock do you want to look at? ")

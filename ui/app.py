@@ -1,10 +1,15 @@
 import asyncio
 from textual.app import App, ComposeResult
+from textual.coordinate import Coordinate
 from textual.widgets import Static, DataTable, Log
 from textual.containers import Grid
+from textual.screen import Screen
 
-from models.portfolio import get_portfolio
+from models.portfolio import get_portfolio, initialize_portfolio
 from api.stock_api import get_current_stock_price
+
+
+initialize_portfolio()
 
 
 rows = []
@@ -13,8 +18,6 @@ for stock in get_portfolio()["portfolio"]:
     rows.append(
         (stock["stock"], stock["name"], stock["buy-price"], stock["current-price"])
     )
-    print(stock)
-print(rows)
 
 
 async def update_current_price(symbol):
@@ -22,7 +25,7 @@ async def update_current_price(symbol):
     return price
 
 
-class mainLayout(App):
+class Dashboard(Screen):
     CSS_PATH = "style.tcss"
 
     def compose(self) -> ComposeResult:
@@ -46,8 +49,6 @@ class mainLayout(App):
         )
         for row in rows[0:]:
             table.add_row(*row, key=row[0])
-        print(get_portfolio())
-
         self.run_worker(self.update_prices())
 
     async def update_prices(self):
@@ -61,9 +62,19 @@ class mainLayout(App):
         table = self.query_one(DataTable)
         log = self.query_one(Log)
         if event.key == "enter":
-            log.write_line(f"{table.cursor_row} was selected")
+            log.write_line(
+                f"{table.get_cell_at(Coordinate(table.cursor_row, 0))} was selected"
+            )
+
+
+class StockApp(App):
+    SCREENS = {"dashboard": Dashboard}
+
+    def on_mount(self) -> None:
+        self.install_screen(Dashboard(), "Dashboard")
+        self.push_screen("dashboard")
 
 
 if __name__ == "__main__":
-    app = mainLayout()
+    app = StockApp()
     app.run()
