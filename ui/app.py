@@ -12,7 +12,7 @@ from api.stock_api import get_current_stock_price
 initialize_portfolio()
 
 
-async def update_current_price(symbol):
+def update_current_price(symbol):
     price = get_current_stock_price(symbol)
     return price
 
@@ -44,13 +44,14 @@ class Dashboard(Screen):
         for row in self.rows[0:]:
             table.add_row(*row, key=row[0])
         self.run_worker(self.update_prices())
+        self.set_interval(30, self.update_prices)
 
     async def update_prices(self):
         table = self.query_one(DataTable)
         for stock in self.rows:
-            price = await update_current_price(stock[0])
+            price = await asyncio.to_thread(update_current_price, stock[0])
             table.update_cell(stock[0], "cur_col", price)
-        self.query_one(Log).write_line("Got market details!")
+        self.query_one(Log).write_line("Updated market data!")
 
     def on_key(self, event) -> None:
         table = self.query_one(DataTable)
