@@ -1,12 +1,15 @@
 import asyncio
+import datetime
+import pandas
 from textual.app import App, ComposeResult
 from textual.coordinate import Coordinate
-from textual.widgets import Static, DataTable, Log
+from textual.widgets import DataTable, Log
 from textual.containers import Grid
 from textual.screen import Screen
+from textual_plotext import PlotextPlot
 
 from models.portfolio import get_portfolio, initialize_portfolio
-from api.stock_api import get_current_stock_price
+from api.stock_api import get_current_stock_price, get_stock_history
 
 
 initialize_portfolio()
@@ -23,7 +26,7 @@ class Dashboard(Screen):
     def compose(self) -> ComposeResult:
         with Grid():
             yield DataTable()
-            yield Static("Test")
+            yield PlotextPlot()
             yield Log(id="console")
 
     def on_mount(self) -> None:
@@ -45,6 +48,26 @@ class Dashboard(Screen):
             table.add_row(*row, key=row[0])
         self.run_worker(self.update_prices())
         self.set_interval(30, self.update_prices)
+        self.update_chart()
+
+    def update_chart(self) -> None:
+        log = self.query_one(Log)
+        table = self.query_one(DataTable)
+        active_line = table.get_cell_at(Coordinate(table.cursor_row, 0))
+        plt = self.query_one(PlotextPlot).plt
+        data = get_stock_history(
+            active_line,
+            "1m",
+            datetime.date.today(),
+            datetime.date.today() + datetime.timedelta(days=1),
+        )
+        data2 = data[["Close"]]
+        data2.index = data2.index.strftime("%d/%m/%Y %H:%M")
+        plt.clf()
+        plt.date_form("d/m/Y H:M", "d/m/Y H:M")
+        plt.scatter(data2.index, data2["Close"], marker="fhd")  # fhd oder braille
+        plt.title("Stock")
+        self.query_one(PlotextPlot).refresh()
 
     async def update_prices(self):
         table = self.query_one(DataTable)
@@ -60,6 +83,7 @@ class Dashboard(Screen):
             log.write_line(
                 f"{table.get_cell_at(Coordinate(table.cursor_row, 0))} was selected"
             )
+            self.update_chart()
 
     def refresh_portfolio(self) -> None:
         self.rows = []
