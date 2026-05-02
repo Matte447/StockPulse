@@ -62,7 +62,8 @@ class Dashboard(Screen):
             datetime.date.today() + datetime.timedelta(days=1),
         )
         data2 = data[["Close"]]
-        data2.index = data2.index.strftime("%d/%m/%Y %H:%M")
+        data2.index = pandas.to_datetime(data2.index).strftime("%d/%m/%Y %H:%M")
+        # data2.index = data2.index.strftime("%d/%m/%Y %H:%M")
         plt.clf()
         plt.date_form("d/m/Y H:M", "d/m/Y H:M")
         plt.scatter(data2.index, data2["Close"], marker="fhd")  # fhd oder braille
@@ -106,6 +107,10 @@ class StockApp(App):
     def on_mount(self) -> None:
         self.install_screen(Dashboard(), "Dashboard")
         self.push_screen("dashboard")
+    
+    def on_key(self, event) -> None:
+        if event.key == "q":
+            self.exit()
 
 
 if __name__ == "__main__":
