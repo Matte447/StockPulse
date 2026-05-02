@@ -3,10 +3,11 @@ import datetime
 import pandas
 from textual.app import App, ComposeResult
 from textual.coordinate import Coordinate
-from textual.widgets import DataTable, Log
+from textual.widgets import DataTable, Log, Footer
 from textual.containers import Grid
 from textual.screen import Screen
 from textual_plotext import PlotextPlot
+from textual.binding import Binding
 
 from models.portfolio import get_portfolio, initialize_portfolio
 from api.stock_api import get_current_stock_price, get_stock_history
@@ -22,12 +23,16 @@ def update_current_price(symbol):
 
 class Dashboard(Screen):
     CSS_PATH = "style.tcss"
+    BINDINGS = [
+        Binding(key="q", action="quit", description="Quit the app"),
+    ]
 
     def compose(self) -> ComposeResult:
         with Grid():
             yield DataTable()
             yield PlotextPlot()
             yield Log(id="console")
+        yield Footer()
 
     def on_mount(self) -> None:
         self.refresh_portfolio()
