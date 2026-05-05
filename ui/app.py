@@ -60,18 +60,38 @@ class Dashboard(Screen):
         table = self.query_one(DataTable)
         active_line = table.get_cell_at(Coordinate(table.cursor_row, 0))
         plt = self.query_one(PlotextPlot).plt
-        data = get_stock_history(
-            active_line,
-            "1m",
-            datetime.date.today(),
-            datetime.date.today() + datetime.timedelta(days=1),
-        )
+        initial_date = 0  # 0 is today, 1 is yesterday and so on
+        days_to_change = 0  # 0 is none, 1 is one day in the past and so on
+        while True:
+            data = get_stock_history(
+                active_line,
+                "1m",
+                datetime.date.today()
+                - datetime.timedelta(days=initial_date + days_to_change),
+                datetime.date.today()
+                + (
+                    datetime.timedelta(days=2)
+                    - datetime.timedelta(days=initial_date + days_to_change + 1)
+                ),
+            )
+            if data.empty is True:
+                days_to_change += 1
+            else:
+                if days_to_change > 0:
+                    self.notify(
+                        f"No data available for {(datetime.date.today() - datetime.timedelta(days=initial_date)).strftime('%d/%m/%Y')}. Switched to {(datetime.date.today() - datetime.timedelta(days=initial_date + days_to_change)).strftime('%d/%m/%Y')}",
+                        title="Chart",
+                    )
+                break
+
         data2 = data[["Close"]]
         data2.index = pandas.to_datetime(data2.index).strftime("%d/%m/%Y %H:%M")
         # data2.index = data2.index.strftime("%d/%m/%Y %H:%M")
         plt.clf()
         plt.date_form("d/m/Y H:M", "d/m/Y H:M")
-        plt.scatter(data2.index, data2["Close"], marker="fhd")  # fhd oder braille
+        plt.scatter(
+            list(data2.index), list(data2["Close"]), marker="fhd"
+        )  # fhd oder braille
         plt.title("Stock")
         self.query_one(PlotextPlot).refresh()
 
@@ -112,7 +132,7 @@ class StockApp(App):
     def on_mount(self) -> None:
         self.install_screen(Dashboard(), "Dashboard")
         self.push_screen("dashboard")
-    
+
     def on_key(self, event) -> None:
         if event.key == "q":
             self.exit()
