@@ -23,19 +23,28 @@ def update_portfolio(stock: str, name: str, quantity: int, buy_price: int) -> No
     with open("./models/portfolio.json", "r") as f:
         current_portfolio = json.load(f)
 
-    for current_stock in current_portfolio["portfolio"]:
-        if current_stock["stock"] == stock:
-            current_stock["quantity"] += quantity
-            content = {}
-            break
-        else:
-            content = {
-                "stock": stock,
-                "name": name,
-                "quantity": quantity,
-                "buy-price": buy_price,
-                "current-price": "Awaiting prize...",
-            }
+    if current_portfolio["portfolio"] == []:
+        content = {
+            "stock": stock,
+            "name": name,
+            "quantity": quantity,
+            "buy-price": buy_price,
+            "current-price": "Awaiting prize...",
+        }
+    else:
+        for current_stock in current_portfolio["portfolio"]:
+            if current_stock["stock"] == stock:
+                current_stock["quantity"] += quantity
+                content = {}
+                break
+            else:
+                content = {
+                    "stock": stock,
+                    "name": name,
+                    "quantity": quantity,
+                    "buy-price": buy_price,
+                    "current-price": "Awaiting prize...",
+                }
     if content != {}:
         current_portfolio["portfolio"].append(content)
 

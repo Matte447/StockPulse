@@ -1,4 +1,5 @@
 import asyncio
+from copy import Error
 import datetime
 import pandas
 from textual.app import App, ComposeResult
@@ -9,7 +10,7 @@ from textual.screen import Screen
 from textual_plotext import PlotextPlot
 from textual.binding import Binding
 
-from models.portfolio import get_portfolio, initialize_portfolio
+from models.portfolio import get_portfolio, initialize_portfolio, update_portfolio
 from api.stock_api import get_current_stock_price, get_stock_history
 
 
@@ -25,6 +26,9 @@ class Dashboard(Screen):
     CSS_PATH = "style.tcss"
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit the app"),
+        Binding(
+            key="enter", action="select", description="Select an Stock", priority=True
+        ),
     ]
 
     def compose(self) -> ComposeResult:
@@ -58,7 +62,15 @@ class Dashboard(Screen):
     def update_chart(self) -> None:
         log = self.query_one(Log)
         table = self.query_one(DataTable)
-        active_line = table.get_cell_at(Coordinate(table.cursor_row, 0))
+        try:
+            active_line = table.get_cell_at(Coordinate(table.cursor_row, 0))
+        except:
+            update_portfolio("aapl", "Demo stock", 1, 100)
+            self.notify(
+                "No stocks in portfolio. Please add one to see them here",
+                severity="warning",
+            )
+            return
         plt = self.query_one(PlotextPlot).plt
         initial_date = 0  # 0 is today, 1 is yesterday and so on
         days_to_change = 0  # 0 is none, 1 is one day in the past and so on
@@ -106,9 +118,12 @@ class Dashboard(Screen):
         table = self.query_one(DataTable)
         log = self.query_one(Log)
         if event.key == "enter":
-            log.write_line(
-                f"{table.get_cell_at(Coordinate(table.cursor_row, 0))} was selected"
-            )
+            try:
+                log.write_line(
+                    f"{table.get_cell_at(Coordinate(table.cursor_row, 0))} was selected"
+                )
+            except:
+                return
             self.update_chart()
 
     def refresh_portfolio(self) -> None:
